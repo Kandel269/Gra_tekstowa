@@ -2,8 +2,11 @@ from random import sample
 
 
 class Person():
-    def __init__(self,HP):
+    def __init__(self,HP,max_HP,skills):
         self.HP = HP
+        self.max_HP = max_HP
+        self.skills = skills
+
     def change_HP(self,HP) -> bool:
         self.HP += HP
         return self.dead()
@@ -15,15 +18,21 @@ class Person():
             return True
 
 class Human(Person):
-    def __init__(self,HP,combat_item_range = None,combat_item_melee = None,item_list = None):
-        super().__init__(HP)
+    def __init__(self,HP,max_HP,skills,combat_item_range = None,combat_item_melee = None,item_list = None):
+        super().__init__(HP,max_HP,skills)
         self.combat_item_melee = combat_item_melee
         self.combat_item_range = combat_item_range
         self.item_list = item_list
 
+    def change_backpack(self,item,add_or_remove) -> None:
+        if add_or_remove == "add":
+            self.item_list.append(item)
+        elif add_or_remove == "remove":
+            self.item_list.remove(item)
+
 class Enemy(Person):
-    def __init__(self,HP,drop_item,drop_item_chance,drop_exp):
-        super().__init__(HP)
+    def __init__(self,HP,max_HP,skills,drop_item,drop_item_chance,drop_exp):
+        super().__init__(HP,max_HP,skills)
         self.list_of_skills = []
         self.drop_item = drop_item                    # slownik {itemek: ilosc}
         self.drop_item_chance = drop_item_chance     # pokazuje jaka jest szansa na wydropienie danego itemku proporcjonalnie do powyzszych wartosci
@@ -44,8 +53,8 @@ class Enemy(Person):
                     continue
 
 class Player(Human):
-    def __init__(self,HP,combat_item_range = None,combat_item_melee = None,money = 0,item_list = None,ammunition_pistol = 0,ammunition_rifle = 0, ammunition_shotgun = 0):
-        super().__init__(HP,combat_item_melee,combat_item_range,item_list)
+    def __init__(self,HP,max_HP,skills,combat_item_melee = None,combat_item_range = None,item_list = None,money = 0,ammunition_pistol = 0,ammunition_rifle = 0, ammunition_shotgun = 0):
+        super().__init__(HP,max_HP,skills,combat_item_melee,combat_item_range,item_list,)
         self.ammunition = {"ammunition_pistol":ammunition_pistol,"ammunition_rifle":ammunition_rifle,"ammunition_shotgun":ammunition_shotgun}
         self.money = money
 
@@ -62,11 +71,6 @@ class Player(Human):
     def change_ammunition(self,type_ammunition,number) -> None:
         self.ammunition[type_ammunition] += number
 
-    def change_backpack(self,item,add_or_remove) -> None:
-        if add_or_remove == "add":
-            self.item_list.append(item)
-        elif add_or_remove == "remove":
-            self.item_list.remove(item)
 
 
 class Monster(Enemy):
@@ -74,3 +78,5 @@ class Monster(Enemy):
 
 class NPC(Human,Enemy):
     pass
+
+

@@ -8,6 +8,9 @@ class Skill():
         self.crit_chance = crit_chance
         self.accuracy = accuracy
 
+    def __repr__(self):
+        return "taka Fajna pukawa"
+
     def hit_or_dodge(self) -> bool:
         dodge = sample(range(1,100),1)
         if dodge <= self.accuracy:
@@ -16,11 +19,14 @@ class Skill():
             return False            #unik
 
     def do_damage(self) -> int:
-        crit = sample(range(100),1)
+        crit = sample(range(100),1)[0]
+
         if crit <= self.crit_chance:
-            return self.crit_damage
+            print("TRAFIENIE KRYTYCZNE!")
+            return -int(self.crit_damage)
         else:
-            return sample(self.damage,1)
+            return -int(sample(self.damage,1)[0])
+
 
 class Weapon(Skill):
     def __init__(self,damage,value,durability,crit_damage,crit_chance,accuracy):         # crit chcance - pomiedzy 0 a 100, gdzie 100 = 100%
@@ -51,3 +57,5 @@ class Weapon_range(Weapon):
 
     def minus_ammunition(self,Person):
         Person.ammunition[self.type_amunition] -= 1
+
+
