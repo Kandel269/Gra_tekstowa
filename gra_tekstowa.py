@@ -34,6 +34,17 @@ class Location():
             print(i, end = ": ")
             print(list_of_action_local[i])
 
+    def ready_player_one_location(self,list_of_action_location_local):
+        chosen_radio = -1
+        new_list_keys = []
+        for i in list_of_action_location_local.keys():
+            new_list_keys.append(str(i))
+        while chosen_radio not in new_list_keys:
+            chosen_radio = input()
+        if chosen_radio not in new_list_keys:
+            print("Wpisz poprawna wartosc")
+        return int(chosen_radio)
+
     def add_action(self,action):
         self.list_of_action.append(action)
 
@@ -72,7 +83,7 @@ class Location():
             return True
 
 class Bassement_1(Location):
-    def player_chosen(self,chosen_action):               #visit[0]
+    def player_chosen(self,chosen_action):
         chosen = self.do_action(chosen_action)
         if chosen == "Przygladnij sie radiu":
              return self.look_on_radio()
@@ -85,33 +96,43 @@ class Bassement_1(Location):
         elif chosen == "Idz do pomieszczenia na wprost":
             pass
 
-    def look_on_radio(self):
-        chosen_radio = -1
-        new_list_keys = []
+    def look_on_radio(self):                        #visit[0,1]
+        list_of_action_radio = {}
         if self.visit[0] == 0:
-            input("Gapisz sie dluzsza chwile na radio i nie wiesz dlaczego nie dziala...\n Twoje nadzwyczaj spore umiejetnosci intelektualne podpowiadaja ci, ze cos jest z nim nie tak\n Krecisz wszystkimi dostepnymi galkami po kolei, naciskasz wszystkie guziki po kolei... dalej nic\n No tak! Wpadles na genialny pomysl, moze nie jest podlaczone do pradu?\n Gniazdka nigdzie tutaj nie ma. Zauwazyles, ze radio mozna zasilac rowniez przez baterie")
+            input("Gapisz sie dluzsza chwile na radio i nie wiesz dlaczego nie dziala...\n Twoje nadzwyczaj spore umiejetnosci intelektualne podpowiadaja ci, ze cos jest z nim nie tak\n Krecisz wszystkimi dostepnymi galkami po kolei, naciskasz wszystkie guziki po kolei... dalej nic\n No tak! Wpadles na genialny pomysl, moze nie jest podlaczone do pradu?\n Gniazdka nigdzie tutaj nie ma. Zauwazyles, ze radio mozna zasilac rowniez przez baterie\n")
             self.visit[0] += 1
-        if self.visit == 1:
-            list_of_action_radio = {1: "Pogap sie chwile na radio z nadzieja, ze jakims magicznym cudem sie uruchomi"}
+        if self.visit[0] == 1:
+            list_of_action_radio[1] = "Pogap sie chwile na radio z nadzieja, ze jakims magicznym cudem sie uruchomi"
             if Bateria in Player_one.item_list:
                 list_of_action_radio[2] = "Wloz baterie do radia"
-            self.action_location_local(list_of_action_radio)
-            for i in list_of_action_radio.keys():
-                new_list_keys.append(str(i))
-            while chosen_radio not in new_list_keys:
-                chosen_radio = input()
-                if chosen_radio not in new_list_keys:
-                    print("Wpisz poprawna wartosc")
-            if list_of_action_radio[chosen_radio] ==  "Pogap sie chwile na radio z nadzieja, ze jakims magicznym cudem sie uruchomi":
-                input("Twoje magiczne starania spelzaja na niczym")
-            elif list_of_action_radio[chosen_radio] == "Wloz baterie do radia":
-                Player_one.change_backpack(Bateria,"remove")
+        if self.visit[0] in [2,3]:
+            list_of_action_radio[1] = "Zalacz radio"
+            list_of_action_radio[2] = "Wyjmij baterie"
+
+        self.action_location_local(list_of_action_radio)
+        chosen_radio = self.ready_player_one_location(list_of_action_radio)
+        if list_of_action_radio[chosen_radio] == "Pogap sie chwile na radio z nadzieja, ze jakims magicznym cudem sie uruchomi":
+            input("Twoje magiczne starania spelzaja na niczym")
+        elif list_of_action_radio[chosen_radio] == "Wloz baterie do radia":
+            Player_one.change_backpack(Bateria,"remove")
+            input("Odkryles umiejetnosc wkladania baterii do radia! Brawo ty!")
+            self.visit[0] = 2
+            return self.look_on_radio()
+        elif list_of_action_radio[chosen_radio] == "Zalacz radio":
+            if self.visit[1] == 0:
+                self.visit[1] += 1
+                input("Radio bzyczy...\n Uderzasz piescia w radio")
+                input("No! Stara, dobra Polska szkola serwisowa dziala jak zawsze!\n")
+            input("Pogoda w dniu dzisiejszym ")                                                             # visit[2] - odlicza dni dla radia + dorzucic do materaca
+        elif list_of_action_radio[chosen_radio] == "Wyjmij baterie":
+            Player_one.change_backpack(Bateria,"add")
 
 
     def search_wardrobe(self,chosen_action):
         chosen_wardrobe = -1
         new_list_keys = []
         list_of_action_wardrobe = {1:"Zabierz ze soba baterie"}
+
         print("Szafa jest niemal pusta, poza dwoma samotnie leżącymi bateriami... Ciekawe czy jeszcze działają?")
         self.action_location_local(list_of_action_wardrobe)
         for i in list_of_action_wardrobe.keys():
@@ -167,7 +188,7 @@ class Bassement_3(Location):
 
 
 ######### Lokacje
-Bassement_start = Bassement_1(["Bassement_2"],["Budzisz sie z ogromnym bolem glowy", "Probujesz sobie przypomniec, co sie wydarzlo","Zeszlej nocy zostales sam w domu, imprezowales cala noc","Aaa... tak... alarm bombowy, wojna atomowa, tylko kilkadziesiat atomowek spadlo na twoj kraj", "slychac bylo wycie syren, zlapales co miales pod reka i wskoczyles do piwnicy","w sumie dawno do niej nie zagladales, jakos tak... od urodzenia","Masz teraz chwile czasu, aby sie po niej rozgladnac\n\n","Znajdujesz sie w malym pomieszczeniu, po prawej stronie znajduje sie wielka szafa", "na wprost widzisz kolejne,ciemne pomieszczenie","pod tylnia sciana dostrzegasz materac oraz polke na ktorej stoi radio","po lewej stronie sa schody, ktore prowadza do nizej polozonego korytarza","Ehhh autor mogl pokusic sie o lepsze opisy... "],{1:"Przygladnij sie radiu",2:"Przeszukaj szafe",3:"Przespij sie na materacu",4:"Idz schodami na dol",5:"Idz do pomieszczenia na wprost"},True,[0])
+Bassement_start = Bassement_1(["Bassement_2"],["Budzisz sie z ogromnym bolem glowy", "Probujesz sobie przypomniec, co sie wydarzlo","Zeszlej nocy zostales sam w domu, imprezowales cala noc","Aaa... tak... alarm bombowy, wojna atomowa, tylko kilkadziesiat atomowek spadlo na twoj kraj", "slychac bylo wycie syren, zlapales co miales pod reka i wskoczyles do piwnicy","w sumie dawno do niej nie zagladales, jakos tak... od urodzenia","Masz teraz chwile czasu, aby sie po niej rozgladnac\n\n","Znajdujesz sie w malym pomieszczeniu, po prawej stronie znajduje sie wielka szafa", "na wprost widzisz kolejne,ciemne pomieszczenie","pod tylnia sciana dostrzegasz materac oraz polke na ktorej stoi radio","po lewej stronie sa schody, ktore prowadza do nizej polozonego korytarza","Ehhh autor mogl pokusic sie o lepsze opisy... "],{1:"Przygladnij sie radiu",2:"Przeszukaj szafe",3:"Przespij sie na materacu",4:"Idz schodami na dol",5:"Idz do pomieszczenia na wprost"},True,[0,0,0])
 Bassement_start_2 = Bassement_2(["Bassement_start","Bassement_start_3"],["Za soba masz schody", "Przed soba ciemny korytarz"],{"1: Spojrz na dupsko":1,"2: Idz w korytarz":2},False,[0])
 Bassement_start_3 = Bassement_3(["Bassement_start_2"],["Widzisz przed soba zwloki, byc moze to zwloki kogos tobie bliskiego","Np.twojego dziadka, ktory pewnego razu poszedl po ziemniaki i nie wrocil...","Dostrzegasz siedzacego na nim ogromnego szczura, ktory groznie lypie na ciebie swymi oczyma"],{"1: Spojrz na dupsko, ale tylko tak troche":1},False,[0])
 ################################# Skile
