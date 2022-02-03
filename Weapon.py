@@ -2,7 +2,8 @@ from random import sample
 
 
 class Skill():
-    def __init__(self,damage,crit_damage,crit_chance,accuracy):
+    def __init__(self,describe,damage,crit_damage,crit_chance,accuracy):
+        self.describe = describe
         self.damage = damage
         self.crit_damage = crit_damage
         self.crit_chance = crit_chance
@@ -27,15 +28,26 @@ class Skill():
         else:
             return -int(sample(self.damage,1)[0])
 
+    def describe_all(self):
+        print(self.describe)
+        print(f"Zadaje - {self.damage} obrazen, szansa na cios krytyczny - {self.crit_chance}%, obrazenia ciosu krytycznego - {self.crit_damage}, celnosc - {self.accuracy}%")
+
+class Spell(Skill):
+    pass
+
 
 class Weapon(Skill):
-    def __init__(self,damage,value,durability,crit_damage,crit_chance,accuracy):         # crit chcance - pomiedzy 0 a 100, gdzie 100 = 100%
-        super().__init__(damage,crit_damage,crit_chance,accuracy)
+    def __init__(self,damage,describe,value,durability,crit_damage,crit_chance,accuracy):         # crit chcance - pomiedzy 0 a 100, gdzie 100 = 100%
+        super().__init__(damage,describe,crit_damage,crit_chance,accuracy)
         self.value = value
         self.durability = durability
 
     def change_durability(self,durability) -> None:
         self.durability += durability
+
+    def describe_all(self):
+        print(self.describe)
+        print(f"Zadaje - {self.damage} obrazen, szansa na cios krytyczny - {self.crit_chance}%, obrazenia ciosu krytycznego - {self.crit_damage}, celnosc - {self.accuracy}%, wartosc broni - {self.value}")
 
 
 class Weapon_melee(Weapon):
@@ -43,8 +55,8 @@ class Weapon_melee(Weapon):
 
 
 class Weapon_range(Weapon):
-    def __init__(self,damage,value,durability,crit_damage,crit_chance,accuracy,type_amunition):
-        super().__init__(damage, value, durability, crit_damage, crit_chance, accuracy)
+    def __init__(self,damage,describe,value,durability,crit_damage,crit_chance,accuracy,type_amunition):
+        super().__init__(damage,describe, value, durability, crit_damage, crit_chance, accuracy)
         self.type_amunition = type_amunition
 
     def do_damage(self,Person) -> int:                      ### tu cos sie pluje, ze nie zgadza sie z Weapon.do_damage, ze nie sa takie same, daje to w ignoruj\\\ Signature of method 'Weapon_range.do_damage()' does not match signature of the base method in class 'Weapon'

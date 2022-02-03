@@ -1,3 +1,4 @@
+from copy import deepcopy
 from random import sample
 
 
@@ -16,6 +17,15 @@ class Person():
             return False
         else:
             return True
+
+    def regeneration_HP(self,regeneration) -> int:                            ## dodaje HP, zwraca wartosc o ile odzyskalismy HP, nie mozna przekroczyc MAX HP
+        if self.HP + regeneration >= self.max_HP:
+            value = deepcopy(self.max_HP - self.HP)
+            self.HP = deepcopy(self.max_HP)
+            return value
+        else:
+            self.HP += regeneration
+            return regeneration
 
 class Human(Person):
     def __init__(self,HP,max_HP,skills,combat_item_range = None,combat_item_melee = None,item_list = None):
@@ -55,11 +65,50 @@ class Enemy(Person):
 class Player(Human):
     def __init__(self,HP,max_HP,skills,combat_item_melee = None,combat_item_range = None,item_list = None,money = 0,ammunition_pistol = 0,ammunition_rifle = 0, ammunition_shotgun = 0):
         super().__init__(HP,max_HP,skills,combat_item_melee,combat_item_range,item_list,)
-        self.ammunition = {"ammunition_pistol":ammunition_pistol,"ammunition_rifle":ammunition_rifle,"ammunition_shotgun":ammunition_shotgun}
+        self.ammunition = {"amunicja pistolet":ammunition_pistol,"amunicja karabin":ammunition_rifle,"amunicja shotgun":ammunition_shotgun}
         self.money = money
 
     def show_backpack(self):
-        pass
+        choose = "-1"
+        counter = 0
+        backpack_list_of_actions = {"0": "Powrot"}
+        backpack_list_of_actions_weapons_print = []
+        backpack_list_of_actions_items_print = []
+        print(f"aktualny poziom doswiadczenia twojej postaci: 1, wymagane doswiadczenie do osiagniecia kolejnego poziomu: nieskonczonosc")
+        print(f"""Amunicja do: pistoletu - {self.ammunition["amunicja pistolet"]}, karabinu - {self.ammunition["amunicja karabin"]}, shotguna - {self.ammunition["amunicja shotgun"]}""")
+        print(f"Twoje aktualne HP wynosi {self.HP} z maksymalnej wartosci {self.max_HP}")
+        print(f"Posiadasz {self.money} hajsu")
+        for i in self.skills:
+            counter += 1
+            backpack_list_of_actions[str(counter)] = i
+            backpack_list_of_actions_weapons_print.append(f"{counter}: {i}")
+        if self.combat_item_melee:
+            for i in self.combat_item_melee:
+                counter += 1
+                backpack_list_of_actions[str(counter)] = i
+                backpack_list_of_actions_weapons_print.append(f"{counter}: {i}")
+        if self.combat_item_range:
+            for i in self.combat_item_range:
+                counter += 1
+                backpack_list_of_actions[str(counter)] = i
+                backpack_list_of_actions_weapons_print.append(f"{counter}: {i}")
+        print(f"Twoja lista umiejetnosci/przedmiotow do walki:{backpack_list_of_actions_weapons_print}")
+        if self.item_list:
+            for i in self.item_list:
+                counter += 1
+                backpack_list_of_actions[str(counter)] = i
+                backpack_list_of_actions_items_print.append(f"{counter}: {i}")
+        print(f"Twoja lista przedmiotow uzytkowych: {backpack_list_of_actions_items_print}")
+        print("0: wyjscie ze statusu postaci")
+
+        while choose != "0":
+            while choose not in backpack_list_of_actions.keys():
+                choose = input()
+                if choose not in backpack_list_of_actions.keys():
+                    print("Wpisz poprawna wartosc")
+            if choose != "0":
+                backpack_list_of_actions[choose].describe_all()
+                choose = "-1"
 
     def change_money(self,money) -> bool:
         if self.money + money <  0:
